@@ -63,20 +63,34 @@ def create_head_dependency(sentence, arrow_to_dict, min_num_dependent=1):
         if len(dependents) >= min_num_dependent:
             # create a training instance for this head
             instance = ['RAND'] * sent_len
-            instance[head] = 'PARENTHESIS'
+            instance[head] = 'OPEN_PARENTHESIS'
             for dependent_index in dependents:
-                instance[dependent_index] = 'PARENTHESIS'
+                instance[dependent_index] = 'CLOSE_PARENTHESIS'
             sentence_data.append(instance)
     return sentence_data
 
+def generate_vocab(vocab_size=500):
+    max_len = len(str(vocab_size))
+    vocab = []
+    for i in range(vocab_size):
+        len_str = len(str(i))
+        if len_str < max_len:
+            str_id = f'T{"0"*(max_len - len_str) + str(i)}'
 
-sentences = read_ud_file('en_pud-ud-test.conllu')
-for sentence in sentences:
-    arrow_to_dict = process_sentence(sentence)
+        else: 
+            str_id = f'T{i}'
 
-    training_instances = create_head_dependency(sentence, arrow_to_dict)
-    # print(training_instances)
-    # print(len(training_instances))
-    break
+    vocab.append(str_id)
+    return vocab
+
+
+# sentences = read_ud_file('en_pud-ud-test.conllu')
+# for sentence in sentences:
+#     arrow_to_dict = process_sentence(sentence)
+
+#     training_instances = create_head_dependency(sentence, arrow_to_dict)
+#     # print(training_instances)
+#     # print(len(training_instances))
+#     break
 
 
