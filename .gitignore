@@ -1,4 +1,6 @@
 data/
 scratch.ipynb
-
+.idea
+UD_data
 *.pyc
+.DS_Store
