@@ -1,3 +1,5 @@
+import random
+
 # Given a text file in UD format, return a list of dicts. Each dict is representing a sentence
 # Each sentence has the following attributes:
 # 1. sent_id: sentence id
@@ -47,7 +49,7 @@ def process_sentence(sentence):
     arrow_to_dict = {}  # arrow is from key to value
     for i in range(sent_len):
         arrow_to_dict[i] = []
-    print(arrow_to_dict)
+    # print(arrow_to_dict)
 
     for word in sentence['words']:
         word_number = int(word[0])
@@ -58,7 +60,7 @@ def process_sentence(sentence):
 
 # Return the training instances for the given sentence, in the form discussed in the proposal
 # min_num_dependent: minimum number of dependents that a head should have to be included in the training instance
-def create_head_dependency(sentence, arrow_to_dict, min_num_dependent=1):
+def create_head_dependency(sentence, arrow_to_dict, min_num_dependent=3):
     sentence_data = []
     sent_len = len(sentence['words']) + 1  # add ROOT
     for head in arrow_to_dict:  # arrow: head -> dependent
@@ -101,11 +103,22 @@ def generate_vocab(vocab_size=400, paren_tokens=50):
         open_tokens.append(open)
         close_tokens.append(close)
 
-    vocab += open
-    vocab += close 
+    return vocab, open_tokens, close_tokens
 
-    return vocab
-
+def sample_one_sentence(inst, vocab, open_tokens, close_tokens):
+    """ Samples random tokens for each training instance. 
+    inst (List()): i.e. ['RAND', 'CLOSE_PARENTHESIS', 'OPEN_PARENTHESIS', 'RAND', 'RAND', 'CLOSE_PARENTHESIS', 'CLOSE_PARENTHESIS', 'RAND', 'RAND', 'RAND', 'RAND', 'RAND']
+    """
+    inst_tokens = []
+    paren_idx = random.randint(0, len(open_tokens)-1)
+    for t in inst: 
+        if t == "OPEN_PARENTHESIS": 
+            inst_tokens.append(open_tokens[paren_idx])
+        elif t == "CLOSE_PARENTHESIS":
+            inst_tokens.append(close_tokens[paren_idx])
+        else: 
+            inst_tokens.append(vocab[random.randint(0, len(vocab)-1)])
+    return inst_tokens
 
 # sentences = read_ud_file('data/en_pud-ud-test.conllu')
 # for sentence in sentences:
