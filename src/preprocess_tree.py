@@ -69,7 +69,7 @@ def create_head_dependency(sentence, arrow_to_dict, min_num_dependent=1):
             sentence_data.append(instance)
     return sentence_data
 
-def generate_vocab(vocab_size=500):
+def generate_vocab(vocab_size=400, parenthesis=50):
     max_len = len(str(vocab_size))
     vocab = []
     for i in range(vocab_size):
@@ -80,11 +80,13 @@ def generate_vocab(vocab_size=500):
         else: 
             str_id = f'T{i}'
 
+    parenthesis_tokens = []
+
     vocab.append(str_id)
     return vocab
 
 
-# sentences = read_ud_file('en_pud-ud-test.conllu')
+# sentences = read_ud_file('data/en_pud-ud-test.conllu')
 # for sentence in sentences:
 #     arrow_to_dict = process_sentence(sentence)
 
