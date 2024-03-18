@@ -3,7 +3,7 @@
 # 1. sent_id: sentence id
 # 2. text: raw text of that sentence
 # 3. words: a list containing every word in that sentence
-def read_ud_file(ud_path):
+def read_ud_file(ud_path, min_sent_length=10):
     with open(ud_path, 'r', encoding='utf-8') as file:
         sentences = []
 
@@ -24,11 +24,14 @@ def read_ud_file(ud_path):
             # \n => end of a sentence
             if line == '\n':
                 # finish and save the current sentence
-                sentence['words'] = words
-                sentences.append(sentence)
-                sentence = {}
-                words = []
-                continue
+                if len(words) < min_sent_length:
+                    continue 
+                else:
+                    sentence['words'] = words
+                    sentences.append(sentence)
+                    sentence = {}
+                    words = []
+                    continue
 
             # read word line
             # sample: 2	While	while	SCONJ	IN	_	9	                mark	    9:mark	_
@@ -69,7 +72,7 @@ def create_head_dependency(sentence, arrow_to_dict, min_num_dependent=1):
             sentence_data.append(instance)
     return sentence_data
 
-def generate_vocab(vocab_size=400, parenthesis=50):
+def generate_vocab(vocab_size=400, paren_tokens=50):
     max_len = len(str(vocab_size))
     vocab = []
     for i in range(vocab_size):
@@ -79,10 +82,28 @@ def generate_vocab(vocab_size=400, parenthesis=50):
 
         else: 
             str_id = f'T{i}'
+        
+        vocab.append(str_id)
 
-    parenthesis_tokens = []
 
-    vocab.append(str_id)
+    open_tokens = []
+    close_tokens = []
+    for i in range(paren_tokens): 
+        len_str = len(str(i))
+
+        if len_str < max_len: 
+            open = f'({"0"*(max_len - len_str) + str(i)}'
+            close = f'){"0"*(max_len - len_str) + str(i)}'
+        else: 
+            open = f'({i}'
+            close = f'){i}'
+
+        open_tokens.append(open)
+        close_tokens.append(close)
+
+    vocab += open
+    vocab += close 
+
     return vocab
 
 
